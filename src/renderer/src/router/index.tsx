@@ -1,9 +1,19 @@
-import { createMemoryRouter } from 'react-router-dom'
+import Camera from '@renderer/pages/Camera'
+import Setting from '@renderer/pages/Setting'
+import { Navigate, createHashRouter } from 'react-router-dom'
 
-const router = createMemoryRouter([
+const router = createHashRouter([
   {
     index: true,
-    element: <></>
+    element: <Navigate to="/setting" />
+  },
+  {
+    path: '/setting',
+    element: <Setting />
+  },
+  {
+    path: '/camera',
+    element: <Camera />
   }
 ])
 
