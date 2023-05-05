@@ -20,8 +20,8 @@ export default function Setting() {
   const [open, _toggleOpen, setOpen] = useToggle(false)
   const { data, isLoading } = useCamera()
   const [device, setDevice] = useState<MediaDeviceInfo | undefined>(undefined)
-  const [started, toggleStart, _setStart] = useToggle(false)
-  const [calib, toggleCalib] = useToggle(true)
+  const [started, toggleStart, _setStart] = useToggle(true)
+  const [calib, toggleCalib] = useToggle(false) //
   const webCamRef = useRef<Webcam>(null)
   const showRef = useRef<HTMLCanvasElement>(null)
   // const _laserPoint = useRef([0, 0])
