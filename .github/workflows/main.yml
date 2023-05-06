@@ -9,6 +9,8 @@ jobs:
     runs-on: [self-hosted, Windows, X64, laptop]
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: "${{ secrets.PAT_TOKEN }}"
       - name: "get version tag"
         run: |
           $env:TAG=$(node -p "require('./package.json').version")
