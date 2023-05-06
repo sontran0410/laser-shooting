@@ -14,7 +14,7 @@ jobs:
       - name: "get version tag"
         run: |
           $env:TAG=$(node -p "require('./package.json').version")
-          echo "action_state=yellow" >> "$GITHUB_ENV"
+          echo "action_state=yellow" >> "$env:GITHUB_ENV"
       - run : |
           echo "${{ env.action_state }}"
       - uses: "marvinpinto/action-automatic-releases@latest"
