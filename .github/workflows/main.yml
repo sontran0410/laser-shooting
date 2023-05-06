@@ -1,0 +1,15 @@
+name: Release window
+run-name: Auto relase for window version 🚀
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: window-latest
+    steps:
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.PAT_TOKEN }}"
+          prerelease: true
+          files: |
+            LICENSE.txt
+            *.jar
+          draft: true
