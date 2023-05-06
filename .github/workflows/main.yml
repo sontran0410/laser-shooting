@@ -3,7 +3,7 @@ run-name: Auto relase for window version 🚀
 on: [push]
 jobs:
   Explore-GitHub-Actions:
-    runs-on: window-latest
+    runs-on: [self-hosted, Windows, X64, laptop]
     steps:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
