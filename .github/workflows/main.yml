@@ -1,6 +1,9 @@
 name: Release window
 run-name: Auto relase for window version 🚀
-on: [push]
+on: 
+  push:
+    branches:
+      - 'main'
 jobs:
   Explore-GitHub-Actions:
     runs-on: [self-hosted, Windows, X64, laptop]
