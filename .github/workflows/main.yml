@@ -6,7 +6,7 @@ on:
       - 'main'
 jobs:
   Explore-GitHub-Actions:
-    runs-on: [self-hosted, Windows, X64, laptop]
+    runs-on: window-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -14,13 +14,21 @@ jobs:
       - name: "get version tag"
         run: |
           $env:TAG=$(node -p "require('./package.json').version")
+          $env:NAME=$(node -p "require('./package.json').name")
+          $env:PREFIX= "setup"
           echo "tag=$env:TAG" >> "$env:GITHUB_ENV"
+          echo "setup_file=dist/$env:NAME-$env:TAG-$env:PREFIX.exe"
+      - name: "install dependencies"
+        run: |
+          npm install && npm run electron-rebuild
+      - name: "production build"
+        run: |
+          npm run build:win
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           automatic_release_tag: "${{ env.tag }}"
           repo_token: "${{ secrets.PAT_TOKEN }}"
           prerelease: true
           files: |
-            LICENSE.txt
-            *.jar
+            ${{ env.setup_file }}
           draft: true
