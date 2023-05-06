@@ -8,6 +8,7 @@ jobs:
   Explore-GitHub-Actions:
     runs-on: [self-hosted, Windows, X64, laptop]
     steps:
+      - uses: actions/checkout@v3
       - name: "get version tag"
         run: |
           $env:TAG=$(node -p "require('./package.json').version")
