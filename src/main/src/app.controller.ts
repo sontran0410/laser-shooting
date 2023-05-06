@@ -12,7 +12,11 @@ export class AppController {
     return 'hello'
   }
   @HandleIPCMessageWithResult('app.detect')
-  detectSpot(@Payload() imageBase64: string) {
-    return this.appService.detectSpot(imageBase64)
+  detectSpot(@Payload() payload: { imageBase64: string; size: number; distance: number }) {
+    return this.appService.detectSpot(payload)
+  }
+  @HandleIPCMessageWithResult('app.calib')
+  calibImage(@Payload() imageBase64: string) {
+    return this.appService.calibImage(imageBase64)
   }
 }

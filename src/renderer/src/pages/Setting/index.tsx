@@ -20,8 +20,8 @@ export default function Setting() {
   const [open, _toggleOpen, setOpen] = useToggle(false)
   const { data, isLoading } = useCamera()
   const [device, setDevice] = useState<MediaDeviceInfo | undefined>(undefined)
-  const [started, toggleStart, _setStart] = useToggle(false)
-  const [calib, toggleCalib] = useToggle(true)
+  const [started, toggleStart, setStart] = useToggle(false)
+  const [calib, toggleCalib] = useToggle(true) //
   const webCamRef = useRef<Webcam>(null)
   const showRef = useRef<HTMLCanvasElement>(null)
   // const _laserPoint = useRef([0, 0])
@@ -41,21 +41,8 @@ export default function Setting() {
     async function getFrameFromWebCam() {
       const imageBase64 = webCamRef.current?.getScreenshot()
       if (imageBase64) {
-        const image = new Image()
-        image.onload = () => {
-          const context = showRef.current?.getContext('2d')
-          if (context) {
-            context.drawImage(image, 0, 0)
-          }
-        }
-        image.src = imageBase64
-      }
-    }
-    async function getFrameFromMainProcess() {
-      const imageBase64 = webCamRef.current?.getScreenshot()
-      if (imageBase64) {
         const result = (await window.electron.ipcRenderer.invoke(
-          'app.detect',
+          'app.calib',
           imageBase64
         )) as string
         const image = new Image()
@@ -67,6 +54,26 @@ export default function Setting() {
         }
         image.src = `data:image/jpeg;base64,${result}`
       }
+    }
+    async function getFrameFromMainProcess() {
+      const imageBase64 = webCamRef.current?.getScreenshot()
+      if (imageBase64) {
+        const { result, detected } = (await window.electron.ipcRenderer.invoke('app.detect', {
+          imageBase64,
+          distance: form.distance,
+          size: form.size
+        })) as { result: string; detected: boolean }
+        const image = new Image()
+        image.onload = () => {
+          const context = showRef.current?.getContext('2d')
+          if (context) {
+            context.drawImage(image, 0, 0)
+          }
+        }
+        image.src = `data:image/jpeg;base64,${result}`
+        return detected
+      }
+      return false
     }
     if (calib) {
       let handle = 0
@@ -95,12 +102,15 @@ export default function Setting() {
         const nextTick = () => {
           handle = requestAnimationFrame(async () => {
             const begin = Date.now()
-            await getFrameFromMainProcess()
-            timeout = setTimeout(() => {
-              if (handle >= 0) {
-                nextTick()
-              }
-            }, 1000 / FPS - (Date.now() - begin))
+            if (!(await getFrameFromMainProcess())) {
+              timeout = setTimeout(() => {
+                if (handle >= 0) {
+                  nextTick()
+                }
+              }, 1000 / FPS - (Date.now() - begin))
+            } else {
+              setStart(false)
+            }
           })
         }
         nextTick()
@@ -112,14 +122,6 @@ export default function Setting() {
       }
     }
   }, [started, calib])
-  useEffect(() => {
-    window.electron.ipcRenderer.on('signal', (_, data) => {
-      console.log(data)
-    })
-    return () => {
-      window.electron.ipcRenderer.removeAllListeners('signal')
-    }
-  }, [])
   return (
     <Paper sx={{ width: '1280px', height: '480px' }} elevation={4}>
       <Stack height={'480px'} width="100%" direction={'row'}>
