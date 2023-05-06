@@ -15,9 +15,11 @@ jobs:
         run: |
           $env:TAG=$(node -p "require('./package.json').version")
           echo "tag=$env:TAG" >> "$GITHUB_ENV"
+      - run : |
+          echo ${{ env.tag }}
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          automatic_release_tag: ${{ env.tag }}
+          automatic_release_tag: "${{ env.tag }}"
           repo_token: "${{ secrets.PAT_TOKEN }}"
           prerelease: true
           files: |
