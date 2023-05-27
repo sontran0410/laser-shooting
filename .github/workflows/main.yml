@@ -2,8 +2,8 @@ name: Build/release Electron app
 
 on:
   push:
-    tags:
-      - v*.*.*
+    branches:
+      - 'main'
 
 jobs:
   release:
@@ -16,7 +16,13 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
-
+      - name: 'get version tag'
+        run: |
+          $env:TAG=$(node -p "require('./package.json').version")
+          $env:NAME=$(node -p "require('./package.json').name")
+          $env:PREFIX= "setup"
+          echo "tag=$env:TAG" >> "$env:GITHUB_ENV"
+          echo "setup_file=dist/$env:NAME-$env:TAG-$env:PREFIX.exe"
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -44,5 +50,6 @@ jobs:
             dist/*.tar.gz
             dist/*.yml
             dist/*.blockmap
+          tag_name: '${{ env.tag }}'
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
