@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common'
-import * as cv from '@u4/opencv4nodejs'
-import { ElectronService } from './electron/electron.service'
+import { default as cvFactory } from '@uysontran/opencv4nodejs'
+
+import * as path from 'path'
+import opencvBinDir from '../../../resources/opencv/opencv_barcode460.dll?asset&asarUnpack'
+process.env.path = `${process.env.path};${path.join(opencvBinDir, '../')};`
+export default path
+
+const cv = cvFactory()
+
 @Injectable()
 export class AppService {
-  constructor(private electronService: ElectronService) {}
-  getHello(): string {
-    return 'Hello World!'
-  }
   detectSpot({
     imageBase64,
     size,
