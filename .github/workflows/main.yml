@@ -1,34 +1,48 @@
-name: Release window
-run-name: Auto relase for window version 🚀
-on: 
+name: Build/release Electron app
+
+on:
   push:
-    branches:
-      - 'main'
+    tags:
+      - v*.*.*
+
 jobs:
-  Explore-GitHub-Actions:
-    runs-on: windows-latest
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest]
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
         with:
-          token: "${{ secrets.PAT_TOKEN }}"
-      - name: "get version tag"
-        run: |
-          $env:TAG=$(node -p "require('./package.json').version")
-          $env:NAME=$(node -p "require('./package.json').name")
-          $env:PREFIX= "setup"
-          echo "tag=$env:TAG" >> "$env:GITHUB_ENV"
-          echo "setup_file=dist/$env:NAME-$env:TAG-$env:PREFIX.exe"
-      - name: "install dependencies"
-        run: |
-          npm install && npm run electron-rebuild
-      - name: "production build"
-        run: |
-          npm run build:win
-      - uses: "marvinpinto/action-automatic-releases@latest"
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: build-win
+        if: matrix.os == 'windows-latest'
+        run: npm run build:win
+
+      - name: release
+        uses: softprops/action-gh-release@v1
         with:
-          automatic_release_tag: "${{ env.tag }}"
-          repo_token: "${{ secrets.PAT_TOKEN }}"
-          prerelease: true
-          files: |
-            ${{ env.setup_file }}
           draft: true
+          files: |
+            dist/*.exe
+            dist/*.zip
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.snap
+            dist/*.deb
+            dist/*.rpm
+            dist/*.tar.gz
+            dist/*.yml
+            dist/*.blockmap
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}

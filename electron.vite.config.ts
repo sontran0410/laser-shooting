@@ -9,7 +9,12 @@ export default defineConfig({
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/main/src/main.ts')
-        }
+        },
+        external: ['lib/opencv4nodejs']
+      },
+      lib: {
+        entry: 'src/main/lib/*.{cjs}',
+        formats: ['cjs']
       }
     }
   },
