@@ -7,8 +7,8 @@ export async function createElectronApp(): Promise<Electron.App> {
     function createWindow(): void {
       // Create the browser window.
       const mainWindow = new BrowserWindow({
-        width: 900,
-        height: 670,
+        width: 1400,
+        height: 600,
         show: false,
         autoHideMenuBar: true,
         webPreferences: {
