@@ -28,7 +28,7 @@
     "@nestjs/microservices": "^9.4.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/websockets": "^9.4.0",
-    "@uysontran/opencv4nodejs": "file:lib/opencv4nodejs/dist/uysontran-opencv4nodejs-6.5.1.tgz",
+    "@uysontran/opencv4nodejs": "file:lib/opencv4nodejs/build/uysontran-opencv4nodejs-6.5.1.tgz",
     "nestjs-electron-ipc-transport": "^1.0.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
