@@ -15,7 +15,7 @@ import { useEffect, useRef, useState } from 'react'
 import Webcam from 'react-webcam'
 import { RocketLaunch } from '@mui/icons-material'
 import { useToggle, useUpdateEffect } from 'usehooks-ts'
-const FPS = 30
+const FPS = 60
 export default function Setting() {
   const [open, _toggleOpen, setOpen] = useToggle(false)
   const { data, isLoading } = useCamera()
@@ -38,13 +38,16 @@ export default function Setting() {
     }
   }, [data])
   useEffect(() => {
+    /**
+     * @function getFrameFromWebCam
+     * Lấy khung hình cần được căn chỉnh lúc căn chỉnh (có vòng tròn đưa vào webcam)
+     */
     async function getFrameFromWebCam() {
       const imageBase64 = webCamRef.current?.getScreenshot()
       if (imageBase64) {
-        const result = (await window.electron.ipcRenderer.invoke(
-          'app.calib',
+        const result = (await window.electron.ipcRenderer.invoke('app.calib', {
           imageBase64
-        )) as string
+        })) as string
         const image = new Image()
         image.onload = () => {
           const context = showRef.current?.getContext('2d')
@@ -61,7 +64,15 @@ export default function Setting() {
         const { result, detected } = (await window.electron.ipcRenderer.invoke('app.detect', {
           imageBase64,
           distance: form.distance,
-          size: form.size
+          size: form.size,
+          // range: {
+          //   lower: [170, 100, 200],
+          //   upper: [180, 255, 255]
+          // }
+          range: {
+            lower: [173, 50, 50],
+            upper: [173, 255, 255]
+          }
         })) as { result: string; detected: boolean }
         const image = new Image()
         image.onload = () => {
@@ -102,6 +113,7 @@ export default function Setting() {
         const nextTick = () => {
           handle = requestAnimationFrame(async () => {
             const begin = Date.now()
+            getFrameFromMainProcess()
             if (!(await getFrameFromMainProcess())) {
               timeout = setTimeout(() => {
                 if (handle >= 0) {
@@ -206,6 +218,7 @@ export default function Setting() {
                 }}
                 select
                 fullWidth
+                disabled={started}
               >
                 <MenuItem value={10}>10</MenuItem>
                 <MenuItem value={20}>20</MenuItem>
