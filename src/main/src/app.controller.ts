@@ -16,7 +16,16 @@ export class AppController {
     return this.appService.detectSpot(payload)
   }
   @HandleIPCMessageWithResult('app.calib')
-  calibImage(@Payload() imageBase64: string) {
-    return this.appService.calibImage(imageBase64)
+  calibImage(
+    @Payload()
+    payload: {
+      imageBase64: string
+      // range: {
+      //   lower: [number, number, number]
+      //   upper: [number, number, number]
+      // }
+    }
+  ) {
+    return this.appService.calibImage(payload.imageBase64)
   }
 }
