@@ -15,6 +15,7 @@ import { useEffect, useRef, useState } from 'react'
 import Webcam from 'react-webcam'
 import { RocketLaunch } from '@mui/icons-material'
 import { useToggle, useUpdateEffect } from 'usehooks-ts'
+import { NumberInput } from '@mantine/core'
 const FPS = 60
 export default function Setting() {
   const [open, _toggleOpen, setOpen] = useToggle(false)
@@ -24,6 +25,7 @@ export default function Setting() {
   const [calib, toggleCalib] = useToggle(true) //
   const webCamRef = useRef<Webcam>(null)
   const showRef = useRef<HTMLCanvasElement>(null)
+  const [zAngle, setZAngle] = useState(0)
   // const _laserPoint = useRef([0, 0])
   const [form, setForm] = useState({
     distance: 25,
@@ -46,7 +48,8 @@ export default function Setting() {
       const imageBase64 = webCamRef.current?.getScreenshot()
       if (imageBase64) {
         const result = (await window.electron.ipcRenderer.invoke('app.calib', {
-          imageBase64
+          imageBase64,
+          zAngle
         })) as string
         const image = new Image()
         image.onload = () => {
@@ -70,9 +73,10 @@ export default function Setting() {
           //   upper: [180, 255, 255]
           // }
           range: {
-            lower: [173, 50, 50],
+            lower: [173, 75, 75],
             upper: [173, 255, 255]
-          }
+          },
+          zAngle
         })) as { result: string; detected: boolean }
         const image = new Image()
         image.onload = () => {
@@ -133,7 +137,7 @@ export default function Setting() {
         }
       }
     }
-  }, [started, calib])
+  }, [started, calib, zAngle])
   return (
     <Paper sx={{ width: '1280px', height: '480px' }} elevation={4}>
       <Stack height={'480px'} width="100%" direction={'row'}>
@@ -204,6 +208,7 @@ export default function Setting() {
               renderInput={(params) => <TextField {...params} label="Chọn thiết bị" />}
               loading={isLoading}
               disableClearable
+              disabled={started}
             />
             <Stack direction={'row'} spacing={3}>
               <TextField
@@ -224,6 +229,7 @@ export default function Setting() {
                 <MenuItem value={20}>20</MenuItem>
                 <MenuItem value={25}>25</MenuItem>
               </TextField>
+
               {/* <TextField
                 label="Kích cỡ bia (cm)"
                 type={"number"}
@@ -243,6 +249,16 @@ export default function Setting() {
                 }}
               /> */}
             </Stack>
+            <NumberInput
+              label="Góc nghiêng camera so với mặt phẳng ngang"
+              value={zAngle}
+              onChange={(value) => {
+                if (typeof value === 'number') {
+                  setZAngle(value)
+                }
+              }}
+              disabled={started}
+            />
           </Stack>
           <Stack
             height={'100%'}

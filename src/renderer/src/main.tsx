@@ -5,6 +5,8 @@ import { RouterProvider } from 'react-router-dom'
 import router from './router'
 import './index.scss'
 import { CssBaseline } from '@mui/material'
+import '@mantine/core/styles.css'
+import { MantineProvider } from '@mantine/core'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -14,8 +16,10 @@ const queryClient = new QueryClient({
 })
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <QueryClientProvider client={queryClient}>
-    <RouterProvider router={router} />
-    <CssBaseline />
-    <ReactQueryDevtools />
+    <MantineProvider>
+      <RouterProvider router={router} />
+      <CssBaseline />
+      <ReactQueryDevtools />
+    </MantineProvider>
   </QueryClientProvider>
 )

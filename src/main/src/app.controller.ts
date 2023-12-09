@@ -12,7 +12,9 @@ export class AppController {
     return 'hello'
   }
   @HandleIPCMessageWithResult('app.detect')
-  detectSpot(@Payload() payload: { imageBase64: string; size: number; distance: number }) {
+  detectSpot(
+    @Payload() payload: { imageBase64: string; size: number; distance: number; zAngle: number }
+  ) {
     return this.appService.detectSpot(payload)
   }
   @HandleIPCMessageWithResult('app.calib')
@@ -20,12 +22,13 @@ export class AppController {
     @Payload()
     payload: {
       imageBase64: string
+      zAngle: number
       // range: {
       //   lower: [number, number, number]
       //   upper: [number, number, number]
       // }
     }
   ) {
-    return this.appService.calibImage(payload.imageBase64)
+    return this.appService.calibImage(payload)
   }
 }
